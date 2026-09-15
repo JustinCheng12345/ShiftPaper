@@ -2,8 +2,7 @@
 # -*- coding:utf-8 -*-
 
 import logging
-#import epd4in26g
-import dummyepd
+import epd4in26g
 import time, datetime
 from PIL import Image,ImageDraw,ImageFont
 from roster import Roster
@@ -23,10 +22,9 @@ try:
 
     callsign = 'NN'
 
-    #epd = epd4in26g.EPD()
-    epd = dummyepd.EPD()
+    epd = epd4in26g.EPD()
     logging.info("init and Clear")
-    #epd.init()
+    epd.init()
     #epd.Clear()
     
     """
@@ -44,7 +42,7 @@ try:
     #120*6+16*5=800 #480-120-16=
     # Drawing on the image
     logging.info("Drawing on the image...")
-    #epd.init()
+    epd.init()
     Himage = Image.new('RGB', (epd.width, epd.height), epd.WHITE)  
     draw = ImageDraw.Draw(Himage)
     # Main Date
@@ -86,7 +84,7 @@ try:
     draw.text((120, 60), 'e-Paper demo', font = font15, fill = epd.YELLOW)
     draw.text((110, 90), u'微雪电子', font = font24, fill = epd.RED)
     """
-    #epd.display(epd.getbuffer(Himage))
+    epd.display(epd.getbuffer(Himage))
     time.sleep(3)
     
     
@@ -96,7 +94,7 @@ try:
     """
     
     logging.info("Goto Sleep...")
-    #epd.sleep()
+    epd.sleep()
         
 except IOError as e:
     logging.info(e)
