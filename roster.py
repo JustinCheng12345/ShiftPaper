@@ -20,6 +20,7 @@ class MonthlyRoster:
 class Roster:
     def __init__(self, callsign):
         self.callsign = callsign
+        self.name = ""
         self.rosters = {}
         self.roster_address = "https://www.dropbox.com/s/cfk0gwggic0v2o5/STRostersData.txt?raw=1"
         self.read_roster()
@@ -43,6 +44,7 @@ class Roster:
                 continue
             if any('Name:' in item for item in row):
                 name_selected = row[1] == self.callsign
+                self.name = row[0][7:] if name_selected else ""
                 continue
             if not name_selected:
                 continue
