@@ -1,33 +1,30 @@
 #!/usr/bin/python
 # -*- coding:utf-8 -*-
-import sys
-import os
-#picdir = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'pic')
-#libdir = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'lib')
-#if os.path.exists(libdir):
-#    sys.path.append(libdir)
 
 import logging
-import epd4in26g
-import time
-import datetime
+#import epd4in26g
+import dummyepd
+import time, datetime
 from PIL import Image,ImageDraw,ImageFont
-import traceback
+from roster import Roster
 
 logging.basicConfig(level=logging.INFO)
 
-def fontType(size):
+def font_type(size):
     return ImageFont.truetype('./Font.ttc', size)
     
-def drawText(draw, message, fonts, x, y, colour):
+def draw_text(draws, message, fonts, x, y, colour):
     # x: centre line of text to draw
     # y: top of text to draw
-    draw.text((x-draw.textlength(message, fonts)/2, y), message, font = fonts, fill = colour)
+    draws.text((x-draw.textlength(message, fonts)/2, y), message, font = fonts, fill = colour)
 
 try:
     logging.info("ShiftPaper Demo")
 
-    epd = epd4in26g.EPD()   
+    callsign = 'NN'
+
+    #epd = epd4in26g.EPD()
+    epd = dummyepd.EPD()
     logging.info("init and Clear")
     #epd.init()
     #epd.Clear()
@@ -41,11 +38,13 @@ try:
     epd.display(epd.getbuffer(Himage))
     time.sleep(5)
     """
-    
+
+    roster = Roster(callsign)
+
     #120*6+16*5=800 #480-120-16=
     # Drawing on the image
     logging.info("Drawing on the image...")
-    epd.init()
+    #epd.init()
     Himage = Image.new('RGB', (epd.width, epd.height), epd.WHITE)  
     draw = ImageDraw.Draw(Himage)
     # Main Date
@@ -58,15 +57,19 @@ try:
     draw.rectangle([(544,360),(664,480)],outline = epd.BLACK, width = 5)
     draw.rectangle([(680,360),(800,480)],outline = epd.BLACK, width = 5)
 
-    day = datetime.datetime.now()
-    drawText(draw, day.strftime("%b"), fontType(60), 172, 20, epd.RED)
-    drawText(draw, day.strftime("%d"), fontType(120), 172, 80, epd.RED)
-    drawText(draw, day.strftime("%a"), fontType(50), 172, 200, epd.RED)
+    day = datetime.date.today()
+    draw_text(draw, day.strftime('%b'), font_type(60), 172, 20, epd.RED)
+    draw_text(draw, day.strftime('%d'), font_type(120), 172, 80, epd.RED)
+    draw_text(draw, day.strftime('%a'), font_type(50), 172, 200, epd.RED)
+    daily_roster = roster.get_shift(day.strftime('%B'), day.day)
+    draw_text(draw, daily_roster[1]+' '+daily_roster[0], font_type(50), 172, 250, epd.RED)
     
     for i in range(0,6):
         day = day + datetime.timedelta(days=1)
-        logging.info(day.strftime("%d"))
-        drawText(draw, day.strftime("%d"), fontType(40), 60+136*i, 375, epd.BLACK)
+        logging.info(day.strftime('%d'))
+        daily_roster = roster.get_shift(day.strftime('%B'), day.day)
+        draw_text(draw, day.strftime('%d'), font_type(40), 60 + 136 * i, 375, epd.BLACK)
+        draw_text(draw, daily_roster[1]+' '+daily_roster[0], font_type(40), 60 + 136 * i, 425, epd.BLACK)
     
     
     """
@@ -86,8 +89,11 @@ try:
     #epd.display(epd.getbuffer(Himage))
     time.sleep(3)
     
+    
+    """
     logging.info("Clear...")
     epd.Clear()
+    """
     
     logging.info("Goto Sleep...")
     #epd.sleep()
