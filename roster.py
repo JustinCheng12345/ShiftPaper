@@ -24,7 +24,6 @@ class Roster:
         self.rosters = {}
         self.roster_address = "https://www.dropbox.com/s/cfk0gwggic0v2o5/STRostersData.txt?raw=1"
         self.read_roster()
-        print(self.rosters)
 
     def read_roster(self):
         logging.info("Reading roster...")
@@ -36,7 +35,6 @@ class Roster:
         day=1
         name_selected=False
         for row in reader:
-            print(row)
             if any('Roster:' in item for item in row):
                 month = row[0][7:]
                 day = 1
@@ -44,7 +42,9 @@ class Roster:
                 continue
             if any('Name:' in item for item in row):
                 name_selected = row[1] == self.callsign
-                self.name = row[0][7:] if name_selected else ""
+                if name_selected:
+                    self.name = row[0][7:]
+                    logging.info("Roster name: " + self.name)
                 continue
             if not name_selected:
                 continue

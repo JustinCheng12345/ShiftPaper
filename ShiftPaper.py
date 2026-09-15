@@ -12,11 +12,16 @@ logging.basicConfig(level=logging.INFO)
 
 def font_type(size):
     return ImageFont.truetype('./Font.ttc', size)
-    
-def draw_text(draws, message, fonts, x, y, colour):
+
+def draw_text_centre(draws, x, y, message, fonts, colour):
     # x: centre line of text to draw
     # y: top of text to draw
-    draws.text((x-draw.textlength(message, fonts)/2, y), message, font = fonts, fill = colour)
+    draws.text((x - draw.textlength(message, fonts) / 2, y), message, font=fonts, fill=colour)
+
+def draw_text_right(draws, x, y, message, fonts, colour):
+    # x: right most pixel of text to draw
+    # y: top of text to draw
+    draws.text((x-draw.textlength(message, fonts), y), message, font = fonts, fill = colour)
 
 try:
     logging.info("ShiftPaper Demo")
@@ -57,25 +62,27 @@ try:
     draw.rectangle([(544,360),(664,480)],outline = epd.BLACK, width = 5)
     draw.rectangle([(680,360),(800,480)],outline = epd.BLACK, width = 5)
 
+    logging.info("Drawing today")
     day = datetime.date.today()
-    draw_text(draw, day.strftime('%b'), font_type(60), 172, 20, epd.RED)
-    draw_text(draw, day.strftime('%d'), font_type(120), 172, 80, epd.RED)
-    draw_text(draw, day.strftime('%a'), font_type(50), 172, 200, epd.RED)
+    draw_text_centre(draw, 172, 20, day.strftime('%b'), font_type(60), epd.RED)
+    draw_text_centre(draw, 172, 80, day.strftime('%d'), font_type(120), epd.RED)
+    draw_text_centre(draw, 172, 200, day.strftime('%a'), font_type(50), epd.RED)
     daily_roster = roster.get_shift(day.strftime('%B'), day.day)
-    draw_text(draw, daily_roster[0]+' '+daily_roster[1], font_type(55), 172, 255, epd.RED)
-    
+    draw_text_centre(draw, 172, 255, daily_roster[0] + ' ' + daily_roster[1], font_type(55), epd.RED)
+
+    logging.info("Drawing extra dates")
     for i in range(0,6):
         day = day + datetime.timedelta(days=1)
-        logging.info(day.strftime('%d'))
         daily_roster = roster.get_shift(day.strftime('%B'), day.day)
-        draw_text(draw, day.strftime('%d'), font_type(40), 60 + 136 * i, 375, epd.BLACK)
-        draw_text(draw, daily_roster[0]+' '+daily_roster[1], font_type(30), 60 + 136 * i, 425, epd.BLACK)
+        draw_text_centre(draw, 60 + 136 * i, 375, day.strftime('%d'), font_type(40), epd.BLACK)
+        draw_text_centre(draw, 60 + 136 * i, 425, daily_roster[0] + ' ' + daily_roster[1], font_type(30), epd.BLACK)
 
+    logging.info("Drawing extra info")
     lu_str = "Last update: "+datetime.datetime.now().strftime('%H:%M')
-    draw_text(draw, lu_str, font_type(20), 800-draw.textlength(lu_str, font_type(20)), 335, epd.BLACK)
+    draw_text_right(draw, 800, 330, lu_str, font_type(25), epd.BLACK)
 
     cu_str = roster.callsign + ' ' + roster.name
-    draw_text(draw, lu_str, font_type(30), 800 - draw.textlength(lu_str, font_type(20)), 0, epd.BLACK)
+    draw_text_right(draw, 800, 0, cu_str, font_type(35), epd.BLACK)
     
     """
     draw.rectangle([(0,0),(50,50)],outline = epd.BLACK)
