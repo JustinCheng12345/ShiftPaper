@@ -60,15 +60,20 @@ try:
     draw_text(draw, day.strftime('%d'), font_type(120), 172, 80, epd.RED)
     draw_text(draw, day.strftime('%a'), font_type(50), 172, 200, epd.RED)
     daily_roster = roster.get_shift(day.strftime('%B'), day.day)
-    draw_text(draw, daily_roster[1]+' '+daily_roster[0], font_type(50), 172, 250, epd.RED)
+    draw_text(draw, daily_roster[0]+' '+daily_roster[1], font_type(55), 172, 255, epd.RED)
     
     for i in range(0,6):
         day = day + datetime.timedelta(days=1)
         logging.info(day.strftime('%d'))
         daily_roster = roster.get_shift(day.strftime('%B'), day.day)
         draw_text(draw, day.strftime('%d'), font_type(40), 60 + 136 * i, 375, epd.BLACK)
-        draw_text(draw, daily_roster[1]+' '+daily_roster[0], font_type(40), 60 + 136 * i, 425, epd.BLACK)
-    
+        draw_text(draw, daily_roster[0]+' '+daily_roster[1], font_type(30), 60 + 136 * i, 425, epd.BLACK)
+
+    lu_str = "Last update: "+datetime.datetime.now().strftime('%H:%M')
+    draw_text(draw, lu_str, font_type(20), 800-draw.textlength(lu_str, font_type(20)), 335, epd.BLACK)
+
+    cu_str = roster.callsign + ' ' + roster.name
+    draw_text(draw, lu_str, font_type(30), 800 - draw.textlength(lu_str, font_type(20)), 0, epd.BLACK)
     
     """
     draw.rectangle([(0,0),(50,50)],outline = epd.BLACK)
