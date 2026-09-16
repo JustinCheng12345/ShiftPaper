@@ -6,7 +6,6 @@ import logging
 import dummyepd
 import time, datetime, holidays
 from PIL import Image,ImageDraw,ImageFont
-from roster import Roster
 
 class Paper:
     def __init__(self, roster):
@@ -17,7 +16,7 @@ class Paper:
             #epd = epd4in26g.EPD()
             epd = dummyepd.EPD()
             logging.info("init and Clear")
-            #epd.init()
+            epd.init()
             #epd.Clear()
 
             def font_type(size):
@@ -52,7 +51,6 @@ class Paper:
             #120*6+16*5=800 #480-120-16=
             # Drawing on the image
             logging.info("Drawing on the image...")
-            #epd.init()
             Himage = Image.new('RGB', (epd.width, epd.height), epd.WHITE)
             draw = ImageDraw.Draw(Himage)
             # Main Date
@@ -101,7 +99,7 @@ class Paper:
             draw.text((120, 60), 'e-Paper demo', font = font15, fill = epd.YELLOW)
             draw.text((110, 90), u'微雪电子', font = font24, fill = epd.RED)
             """
-            #epd.display(epd.getbuffer(Himage))
+            epd.display(epd.getbuffer(Himage))
             time.sleep(3)
 
 
@@ -111,7 +109,25 @@ class Paper:
             """
 
             logging.info("Goto Sleep...")
-            #epd.sleep()
+            epd.sleep()
+
+        except IOError as e:
+            logging.info(e)
+
+        except KeyboardInterrupt:
+            logging.info("ctrl + c:")
+            epd4in26g.epdconfig.module_exit(cleanup=True)
+            exit()
+
+    def clear_paper(self):
+        try:
+            #epd = epd4in26g.EPD()
+            epd = dummyepd.EPD()
+            logging.info("Clear and sleep")
+            epd.init()
+            epd.Clear()
+            time.sleep(2)
+            epd.sleep()
 
         except IOError as e:
             logging.info(e)
