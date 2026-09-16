@@ -43,7 +43,7 @@ class Roster:
             if any('Name:' in item for item in row):
                 name_selected = row[1] == self.callsign
                 if name_selected:
-                    self.name = row[0][7:]
+                    self.name = row[0][5:]
                     logging.info("Roster name: " + self.name)
                 continue
             if not name_selected:
