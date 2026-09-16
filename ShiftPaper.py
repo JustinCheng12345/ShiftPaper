@@ -9,19 +9,6 @@ from roster import Roster
 
 logging.basicConfig(level=logging.INFO)
 
-def font_type(size):
-    return ImageFont.truetype('./Font.ttc', size)
-
-def draw_text_centre(draws, x, y, message, fonts, colour):
-    # x: centre line of text to draw
-    # y: top of text to draw
-    draws.text((x - draw.textlength(message, fonts) / 2, y), message, font=fonts, fill=colour)
-
-def draw_text_right(draws, x, y, message, fonts, colour):
-    # x: right most pixel of text to draw
-    # y: top of text to draw
-    draws.text((x-draw.textlength(message, fonts), y), message, font = fonts, fill = colour)
-
 try:
     logging.info("ShiftPaper Demo")
 
@@ -31,6 +18,25 @@ try:
     logging.info("init and Clear")
     epd.init()
     #epd.Clear()
+
+    def font_type(size):
+        return ImageFont.truetype('./Font.ttc', size)
+
+    def draw_text_centre(draws, x, y, message, fonts, colour=epd.BLACK):
+        # x: centre line of text to draw
+        # y: top of text to draw
+        draws.text((x - draw.textlength(message, fonts) / 2, y), message, font=fonts, fill=colour)
+
+    def draw_text_right(draws, x, y, message, fonts, colour=epd.BLACK):
+        # x: right most pixel of text to draw
+        # y: top of text to draw
+        draws.text((x - draw.textlength(message, fonts), y), message, font=fonts, fill=colour)
+
+    def cal_col(day):
+        if day in holidays.HK() or day.weekday() >4:
+            return epd.RED
+        else:
+            return epd.BLACK
     
     """
     # read bmp file 
@@ -62,18 +68,18 @@ try:
 
     logging.info("Drawing today")
     day = datetime.date.today()
-    draw_text_centre(draw, 172, 20, day.strftime('%b'), font_type(60), epd.RED)
-    draw_text_centre(draw, 172, 80, day.strftime('%d'), font_type(120), epd.RED)
-    draw_text_centre(draw, 172, 200, day.strftime('%a'), font_type(50), epd.RED)
-    daily_roster = roster.get_shift(day.strftime('%B'), day.day)
-    draw_text_centre(draw, 172, 255, daily_roster[0] + ' ' + daily_roster[1], font_type(55), epd.RED)
+    draw_text_centre(draw, 172, 20, day.strftime('%b'), font_type(60), cal_col(day))
+    draw_text_centre(draw, 172, 80, day.strftime('%d'), font_type(120), cal_col(day))
+    draw_text_centre(draw, 172, 200, day.strftime('%a'), font_type(50), cal_col(day))
+    daily_roster = roster.get_shift(day.strftime('%B'), cal_col(day))
+    draw_text_centre(draw, 172, 255, daily_roster[0] + ' ' + daily_roster[1], font_type(55), cal_col(day))
 
     logging.info("Drawing extra dates")
     for i in range(0,6):
         day = day + datetime.timedelta(days=1)
-        daily_roster = roster.get_shift(day.strftime('%B'), day.day)
-        draw_text_centre(draw, 60 + 136 * i, 375, day.strftime('%d'), font_type(40), epd.BLACK)
-        draw_text_centre(draw, 60 + 136 * i, 425, daily_roster[0] + ' ' + daily_roster[1], font_type(30), epd.BLACK)
+        daily_roster = roster.get_shift(day.strftime('%B'), cal_col(day))
+        draw_text_centre(draw, 60 + 136 * i, 375, day.strftime('%d'), font_type(40), cal_col(day))
+        draw_text_centre(draw, 60 + 136 * i, 425, daily_roster[0] + ' ' + daily_roster[1], font_type(30), cal_col(day))
 
     logging.info("Drawing extra info")
     lu_str = "Last update: "+datetime.datetime.now().strftime('%H:%M')
