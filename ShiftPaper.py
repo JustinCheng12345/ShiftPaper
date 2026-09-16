@@ -3,7 +3,7 @@
 
 import logging
 import epd4in26g
-import time, datetime
+import time, datetime, holidays
 from PIL import Image,ImageDraw,ImageFont
 from roster import Roster
 
