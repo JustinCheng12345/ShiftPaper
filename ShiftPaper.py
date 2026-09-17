@@ -15,6 +15,6 @@ eatis = info.AtisReader()
 epaper = paper.Paper(eroster)
 
 while True:
-    #epaper.draw_paper()
-    eatis.get_runway()
+    epaper.update_paper()
+    #eatis.get_runway()
     break

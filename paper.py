@@ -21,10 +21,16 @@ class Paper:
                 tl = self.draw.textlength(message, font_type(font_size))
                 if anchor == 'lt':
                     self.draw.rectangle([(x, y), (x+tl, y+font_size)], fill=epd.WHITE)
+                if anchor == 'lb':
+                    self.draw.rectangle([(x, y-font_size), (x+tl, y)], fill=epd.WHITE)
                 elif anchor == 'rt':
                     self.draw.rectangle([(x-tl, y), (x, y+font_size)], fill=epd.WHITE)
+                elif anchor == 'rb':
+                    self.draw.rectangle([(x-tl, y-font_size), (x, y)], fill=epd.WHITE)
                 elif anchor == 'mt':
                     self.draw.rectangle([(x-tl/2, y), (x+tl/2, y+font_size)], fill=epd.WHITE)
+                elif anchor == 'mb':
+                    self.draw.rectangle([(x-tl/2, y-font_size), (x+tl/2, y)], fill=epd.WHITE)
             self.draw.text((x, y), message, font=font_type(font_size), fill=colour, anchor=anchor)
 
         def cal_col(day):
@@ -44,7 +50,7 @@ class Paper:
 
         draw_text(172, 25, day.strftime('%b'), 60, colour=cal_col(day), anchor='mt')
         draw_text(172, 110, day.strftime('%d'), 120, colour=cal_col(day), anchor='mt')
-        draw_text(172, 210, day.strftime('%a'), 510, colour=cal_col(day), anchor='mt')
+        draw_text(172, 210, day.strftime('%a'), 50, colour=cal_col(day), anchor='mt')
         daily_roster = self.roster.get_shift(day.strftime('%B'), day.day)
         draw_text(172, 275, daily_roster[0] + ' ' + daily_roster[1], 55, colour=cal_col(day), anchor='mt')
 
