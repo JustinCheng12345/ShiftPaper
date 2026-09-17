@@ -12,8 +12,8 @@ callsign = 'NN'
 
 logging.info("ShiftPaper Demo")
 eroster = roster.Roster(callsign)
-epaper = paper.Paper(eroster)
 eatis = info.AtisReader()
+epaper = paper.Paper(eroster)
 
 while True:
     #epaper.draw_paper()
