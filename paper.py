@@ -10,6 +10,7 @@ from PIL import Image,ImageDraw,ImageFont
 class Paper:
     def __init__(self, roster):
         self.roster = roster
+        self.draw = None
 
     def draw_paper(self):
         try:
@@ -22,6 +23,9 @@ class Paper:
             def font_type(size):
                 return ImageFont.truetype('./Font.ttc', size)
 
+            def draw_text_left(draws, x, y, message, fonts, colour=epd.BLACK):
+                draws.text((x - draw.textlength(message, fonts) / 2, y), message, font=fonts, fill=colour)
+
             def draw_text_centre(draws, x, y, message, fonts, colour=epd.BLACK):
                 # x: centre line of text to draw
                 # y: top of text to draw
@@ -29,7 +33,6 @@ class Paper:
 
             def draw_text_right(draws, x, y, message, fonts, colour=epd.BLACK):
                 # x: right most pixel of text to draw
-                # y: top of text to draw
                 draws.text((x - draw.textlength(message, fonts), y), message, font=fonts, fill=colour)
 
             def cal_col(day):
@@ -53,38 +56,36 @@ class Paper:
             logging.info("Drawing on the image...")
             Himage = Image.new('RGB', (epd.width, epd.height), epd.WHITE)
             draw = ImageDraw.Draw(Himage)
+            
             # Main Date
-            draw.rectangle([(0,0),(344,344)],outline = epd.BLACK, width = 5)
-            # 6 Following Dates
-            draw.rectangle([(0,360),(120,480)],outline = epd.BLACK, width = 5)
-            draw.rectangle([(136,360),(256,480)],outline = epd.BLACK, width = 5)
-            draw.rectangle([(272,360),(392,480)],outline = epd.BLACK, width = 5)
-            draw.rectangle([(408,360),(528,480)],outline = epd.BLACK, width = 5)
-            draw.rectangle([(544,360),(664,480)],outline = epd.BLACK, width = 5)
-            draw.rectangle([(680,360),(800,480)],outline = epd.BLACK, width = 5)
-
             logging.info("Drawing today")
             day = datetime.date.today()
-            draw_text_centre(draw, 172, 20, day.strftime('%b'), font_type(60), cal_col(day))
-            draw_text_centre(draw, 172, 80, day.strftime('%d'), font_type(120), cal_col(day))
-            draw_text_centre(draw, 172, 200, day.strftime('%a'), font_type(50), cal_col(day))
+            draw.rectangle([(0,0),(345,345)],outline = cal_col(day), width = 5)
+            
+            draw.text((172, 25), day.strftime('%b'), font=font_type(60), fill=cal_col(day), anchor='mt')
+            draw.text((172, 110), day.strftime('%d'), font=font_type(120), fill=cal_col(day), anchor='mt')
+            draw.text((172, 210), day.strftime('%a'), font=font_type(50), fill=cal_col(day), anchor='mt')
             daily_roster = self.roster.get_shift(day.strftime('%B'), day.day)
-            draw_text_centre(draw, 172, 255, daily_roster[0] + ' ' + daily_roster[1], font_type(55), cal_col(day))
-
+            draw.text((172, 275), daily_roster[0] + ' ' + daily_roster[1], font=font_type(55), fill=cal_col(day), anchor='mt')
+            
+            # 6 Following Dates
             logging.info("Drawing extra dates")
             for i in range(0,6):
                 day = day + datetime.timedelta(days=1)
                 daily_roster = self.roster.get_shift(day.strftime('%B'), day.day)
-                draw_text_centre(draw, 60 + 136 * i, 375, day.strftime('%d'), font_type(40), cal_col(day))
-                draw_text_centre(draw, 60 + 136 * i, 425, daily_roster[0] + ' ' + daily_roster[1], font_type(30), cal_col(day))
+                draw.rectangle([(0+135*i,355),(125+135*i,480)],outline = epd.BLACK, width = 5)
+                draw.text((62 + 136 * i, 380), day.strftime('%d'), font=font_type(40), fill=cal_col(day), anchor='mt')
+                draw.text((62 + 136 * i, 430), daily_roster[0] + ' ' + daily_roster[1], font=font_type(30), fill=cal_col(day), anchor='mt')
+                
+            logging.info("Drawing art")
+            Image.Image.paste(Himage, Image.open('./art3.bmp'), (350, 5))
 
             logging.info("Drawing extra info")
             lu_str = "Last update: "+datetime.datetime.now().strftime('%H:%M')
-            draw_text_right(draw, 800, 330, lu_str, font_type(25), epd.BLACK)
+            draw.text((800,345), lu_str, font=font_type(25), fill=epd.BLACK, anchor='rb')
 
             cu_str = self.roster.callsign + ' ' + self.roster.name
-            draw_text_right(draw, 800, 0, cu_str, font_type(35), epd.BLACK)
-
+            draw.text((800,0), cu_str, font=font_type(35), fill=epd.BLACK, anchor='rt')
             """
             draw.rectangle([(0,0),(50,50)],outline = epd.BLACK)
             draw.rectangle([(55,0),(100,50)],fill = epd.RED)
