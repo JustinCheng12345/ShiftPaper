@@ -2,8 +2,8 @@
 # -*- coding:utf-8 -*-
 
 import logging
-import epd4in26g
-#import dummyepd
+#import epd4in26g
+import dummyepd
 import time, datetime, holidays
 from PIL import Image,ImageDraw,ImageFont
 
@@ -77,8 +77,8 @@ class Paper:
 
     def update_paper(self):
         try:
-            epd = epd4in26g.EPD()
-            #epd = dummyepd.EPD()
+            #epd = epd4in26g.EPD()
+            epd = dummyepd.EPD()
             logging.info("init and Clear")
             epd.init()
             Himage = self.draw_paper(epd)
@@ -103,8 +103,8 @@ class Paper:
 
     def clear_paper(self):
         try:
-            epd = epd4in26g.EPD()
-            #epd = dummyepd.EPD()
+            #epd = epd4in26g.EPD()
+            epd = dummyepd.EPD()
             logging.info("Clear and sleep")
             epd.init()
             epd.Clear()
