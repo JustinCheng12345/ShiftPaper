@@ -8,15 +8,17 @@ import time, datetime, holidays
 from PIL import Image,ImageDraw,ImageFont
 
 class Paper:
-    def __init__(self, roster):
+    def __init__(self, roster, atis, weather):
         self.roster = roster
+        self.atis = atis
+        self.weather = weather
         self.draw = None
         # self.epd = epd4in26g.EPD()
         self.epd = dummyepd.EPD()
+        
+        # Dummy item allowing splitting drawing image from epd updating
         self.height = self.epd.height
         self.width = self.epd.width
-        
-        # Colour
         self.BLACK  = 0x000000   #   00  BGR
         self.WHITE  = 0xffffff   #   01
         self.YELLOW = 0x00ffff   #   10
@@ -72,8 +74,15 @@ class Paper:
             draw_text(62 + 136 * i, 380, day.strftime('%d'), 40, colour=cal_col(day), anchor='mt')
             draw_text(62 + 136 * i, 430, daily_roster[0] + ' ' + daily_roster[1], 30, colour=cal_col(day), anchor='mt')
 
-        # Art
-        Image.Image.paste(Himage, Image.open('./art3.bmp'), (350, 5))
+        # Art or Warning
+        if self.weather.typhoon or self.weather.rainstorm:
+            if self.weather.typhoon:
+                Image.Image.paste(Himage, Image.open('./art/'+self.weather.typhoon+'.bmp'), (350, 0))
+            if self.weather.rainstorm:
+                Image.Image.paste(Himage, Image.open('./art/'+self.weather.rainstorm+'.bmp'), (350, 0))
+        else:
+            # No weather warning, display art background
+            Image.Image.paste(Himage, Image.open('./art/art3.bmp'), (350, 5))
 
         # Extra info
         logging.info("Drawing extra info")

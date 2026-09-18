@@ -13,7 +13,7 @@ logging.info("ShiftPaper Demo")
 eroster = roster.Roster(callsign)
 eatis = info.AtisReader()
 eweather = info.WeatherReader()
-epaper = paper.Paper(eroster)
+epaper = paper.Paper(eroster, eatis, eweather)
 
 while True:
     #epaper.update_paper()
