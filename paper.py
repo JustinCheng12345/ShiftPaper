@@ -11,37 +11,47 @@ class Paper:
     def __init__(self, roster):
         self.roster = roster
         self.draw = None
+        # self.epd = epd4in26g.EPD()
+        self.epd = dummyepd.EPD()
+        self.height = self.epd.height
+        self.width = self.epd.width
+        
+        # Colour
+        self.BLACK  = 0x000000   #   00  BGR
+        self.WHITE  = 0xffffff   #   01
+        self.YELLOW = 0x00ffff   #   10
+        self.RED    = 0x0000ff   #   11
 
-    def draw_paper(self, epd):
+    def draw_paper(self):
         def font_type(size):
             return ImageFont.truetype('./Font.ttc', size)
 
-        def draw_text(x, y, message, font_size, colour=epd.BLACK, anchor='lt', bg=False):
+        def draw_text(x, y, message, font_size, colour=self.BLACK, anchor='lt', bg=False):
             if bg:
                 tl = self.draw.textlength(message, font_type(font_size))
                 if anchor == 'lt':
-                    self.draw.rectangle([(x, y), (x+tl, y+font_size)], fill=epd.WHITE)
+                    self.draw.rectangle([(x, y), (x+tl, y+font_size)], fill=self.WHITE)
                 if anchor == 'lb':
-                    self.draw.rectangle([(x, y-font_size), (x+tl, y)], fill=epd.WHITE)
+                    self.draw.rectangle([(x, y-font_size), (x+tl, y)], fill=self.WHITE)
                 elif anchor == 'rt':
-                    self.draw.rectangle([(x-tl, y), (x, y+font_size)], fill=epd.WHITE)
+                    self.draw.rectangle([(x-tl, y), (x, y+font_size)], fill=self.WHITE)
                 elif anchor == 'rb':
-                    self.draw.rectangle([(x-tl, y-font_size), (x, y)], fill=epd.WHITE)
+                    self.draw.rectangle([(x-tl, y-font_size), (x, y)], fill=self.WHITE)
                 elif anchor == 'mt':
-                    self.draw.rectangle([(x-tl/2, y), (x+tl/2, y+font_size)], fill=epd.WHITE)
+                    self.draw.rectangle([(x-tl/2, y), (x+tl/2, y+font_size)], fill=self.WHITE)
                 elif anchor == 'mb':
-                    self.draw.rectangle([(x-tl/2, y-font_size), (x+tl/2, y)], fill=epd.WHITE)
+                    self.draw.rectangle([(x-tl/2, y-font_size), (x+tl/2, y)], fill=self.WHITE)
             self.draw.text((x, y), message, font=font_type(font_size), fill=colour, anchor=anchor)
 
         def cal_col(day):
             if day in holidays.HK() or day.weekday() > 4:
-                return epd.RED
+                return self.RED
             else:
-                return epd.BLACK
+                return self.BLACK
 
         # 120*6+16*5=800 #480-120-16=
         # Drawing on the image
-        Himage = Image.new('RGB', (epd.width, epd.height), epd.WHITE)
+        Himage = Image.new('RGB', (self.width, self.height), self.WHITE)
         self.draw = ImageDraw.Draw(Himage)
 
         # Main Date
@@ -58,7 +68,7 @@ class Paper:
         for i in range(0, 6):
             day = day + datetime.timedelta(days=1)
             daily_roster = self.roster.get_shift(day.strftime('%B'), day.day)
-            self.draw.rectangle([(0 + 135 * i, 355), (125 + 135 * i, 480)], outline=epd.BLACK, width=5)
+            self.draw.rectangle([(0 + 135 * i, 355), (125 + 135 * i, 480)], outline=self.BLACK, width=5)
             draw_text(62 + 136 * i, 380, day.strftime('%d'), 40, colour=cal_col(day), anchor='mt')
             draw_text(62 + 136 * i, 430, daily_roster[0] + ' ' + daily_roster[1], 30, colour=cal_col(day), anchor='mt')
 
@@ -77,12 +87,10 @@ class Paper:
 
     def update_paper(self):
         try:
-            #epd = epd4in26g.EPD()
-            epd = dummyepd.EPD()
             logging.info("init and Clear")
-            epd.init()
-            Himage = self.draw_paper(epd)
-            epd.display(epd.getbuffer(Himage))
+            self.epd.init()
+            Himage = self.draw_paper()
+            self.epd.display(self.epd.getbuffer(Himage))
             time.sleep(3)
 
             """
@@ -91,7 +99,7 @@ class Paper:
             """
 
             logging.info("Goto Sleep...")
-            epd.sleep()
+            self.epd.sleep()
 
         except IOError as e:
             logging.info(e)
@@ -103,13 +111,11 @@ class Paper:
 
     def clear_paper(self):
         try:
-            #epd = epd4in26g.EPD()
-            epd = dummyepd.EPD()
             logging.info("Clear and sleep")
-            epd.init()
-            epd.Clear()
+            self.epd.init()
+            self.epd.Clear()
             time.sleep(2)
-            epd.sleep()
+            self.epd.sleep()
 
         except IOError as e:
             logging.info(e)
