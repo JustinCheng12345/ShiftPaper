@@ -16,7 +16,7 @@ eweather = info.WeatherReader()
 epaper = paper.Paper(eroster, eatis, eweather)
 
 while True:
-    #epaper.update_paper()
     #eatis.get_runway()
     eweather.get_weather()
+    epaper.update_paper()
     break

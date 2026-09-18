@@ -64,6 +64,7 @@ class Paper:
         draw_text(172, 110, day.strftime('%d'), 120, colour=cal_col(day), anchor='mt')
         draw_text(172, 210, day.strftime('%a'), 50, colour=cal_col(day), anchor='mt')
         daily_roster = self.roster.get_shift(day.strftime('%B'), day.day)
+        working_day = daily_roster[0] != ''
         draw_text(172, 275, daily_roster[0] + ' ' + daily_roster[1], 55, colour=cal_col(day), anchor='mt')
 
         # 6 Following Dates
@@ -74,12 +75,12 @@ class Paper:
             draw_text(62 + 136 * i, 380, day.strftime('%d'), 40, colour=cal_col(day), anchor='mt')
             draw_text(62 + 136 * i, 430, daily_roster[0] + ' ' + daily_roster[1], 30, colour=cal_col(day), anchor='mt')
 
-        # Art or Warning
-        if self.weather.typhoon or self.weather.rainstorm:
+        # Art or Info
+        if self.weather.typhoon or self.weather.rainstorm or working_day:
             if self.weather.typhoon:
                 Image.Image.paste(Himage, Image.open('./art/'+self.weather.typhoon+'.bmp'), (350, 0))
             if self.weather.rainstorm:
-                Image.Image.paste(Himage, Image.open('./art/'+self.weather.rainstorm+'.bmp'), (350, 0))
+                Image.Image.paste(Himage, Image.open('./art/'+self.weather.rainstorm+'.bmp'), (350, 175))
         else:
             # No weather warning, display art background
             Image.Image.paste(Himage, Image.open('./art/art3.bmp'), (350, 5))
