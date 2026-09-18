@@ -2,8 +2,8 @@
 # -*- coding:utf-8 -*-
 
 import logging
-#import epd4in26g
-import dummyepd
+import epd4in26g
+#import dummyepd
 import time, datetime, holidays
 from PIL import Image,ImageDraw,ImageFont
 
@@ -13,9 +13,9 @@ class Paper:
         self.atis = atis
         self.weather = weather
         self.draw = None
-        # self.epd = epd4in26g.EPD()
-        self.epd = dummyepd.EPD()
-        
+        self.epd = epd4in26g.EPD()
+        # self.epd = dummyepd.EPD()
+
         # Dummy item allowing splitting drawing image from epd updating
         self.height = self.epd.height
         self.width = self.epd.width
