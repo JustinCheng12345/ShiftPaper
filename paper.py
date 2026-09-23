@@ -76,7 +76,7 @@ class Paper:
             draw_text(62 + 136 * i, 430, daily_roster[0] + ' ' + daily_roster[1], 30, colour=cal_col(day), anchor='mt')
 
         # Art or Info
-        if self.weather.typhoon or self.weather.rainstorm or working_day:
+        if self.weather.typhoon or self.weather.rainstorm:
             if self.weather.typhoon:
                 Image.Image.paste(Himage, Image.open('./art/'+self.weather.typhoon+'.bmp'), (350, 0))
             if self.weather.rainstorm:
@@ -85,6 +85,7 @@ class Paper:
         else:
             # No weather warning, display art background
             Image.Image.paste(Himage, Image.open('./art/art3.bmp'), (350, 5))
+            draw_text(800, 40, self.atis.get_runway, 40, anchor='rt', bg=True)
 
         # Extra info
         logging.info("Drawing extra info")
