@@ -81,11 +81,11 @@ class Paper:
                 Image.Image.paste(Himage, Image.open('./art/'+self.weather.typhoon+'.bmp'), (350, 0))
             if self.weather.rainstorm:
                 Image.Image.paste(Himage, Image.open('./art/'+self.weather.rainstorm+'.bmp'), (350, 175))
-            draw_text(530, 40, self.atis.get_runway, 40)
+            draw_text(530, 40, self.atis.runway_config, 40)
         else:
             # No weather warning, display art background
             Image.Image.paste(Himage, Image.open('./art/art3.bmp'), (350, 5))
-            draw_text(800, 40, self.atis.get_runway, 40, anchor='rt', bg=True)
+            draw_text(800, 40, self.atis.runway_config, 40, anchor='rt', bg=True)
 
         # Extra info
         logging.info("Drawing extra info")
